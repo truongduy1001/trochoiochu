@@ -118,12 +118,10 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col font-[Helvetica_Neue,Arial,sans-serif] transition-colors duration-500 overflow-x-hidden selection:bg-indigo-500/30 ${theme.bg} ${theme.text}`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-500 overflow-x-hidden selection:bg-indigo-500/30 ${theme.bg} ${theme.text}`}>
       <Header
         total={questionsData.length}
         opened={openedIds.length}
-        onReset={handleResetRequest}
-        resetTrigger={resetTrigger}
         theme={theme}
       />
 

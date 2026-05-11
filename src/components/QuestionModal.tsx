@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Question } from '../data/questions';
 import { useEffect } from 'react';
 import { ThemeDef } from '../data/themes';
+import { X } from 'lucide-react';
 
 interface QuestionModalProps {
   question: Question | null;
@@ -39,27 +40,28 @@ export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-full max-w-[500px] border-[2px] rounded-[32px] p-[30px] md:p-[40px] flex flex-col font-[Helvetica_Neue,Arial,sans-serif] ${theme.modalBg} transition-colors duration-500`}
+            className={`relative w-[95vw] md:w-[90vw] max-w-[1200px] min-h-[60vh] md:min-h-[70vh] border-[2px] rounded-[32px] p-[30px] md:p-[60px] flex flex-col ${theme.modalBg} transition-colors duration-500`}
           >
-            <div className="flex justify-between items-center mb-[24px] border-b border-white/10 pb-[16px]">
-              <span className={`font-bold text-[14px] ${theme.modalTitle}`}>
+            <div className="flex justify-between items-center mb-[32px] border-b border-white/10 pb-[24px]">
+              <span className={`font-bold text-[18px] md:text-[24px] uppercase tracking-[2px] ${theme.modalTitle}`}>
                 CÂU HỎI SỐ {String(question.id).padStart(2, '0')}
               </span>
-              <span className="text-slate-500 text-[14px]">ID: Q{question.id}-{new Date().getFullYear()}</span>
             </div>
 
-            <p className={`text-[20px] md:text-[22px] leading-[1.5] mb-[32px] ${theme.modalText}`}>
-              {question.question}
-            </p>
+            <div className="flex-1 flex flex-col justify-center">
+              <p className={`text-[28px] md:text-[48px] leading-[1.4] text-center mb-[40px] ${theme.modalText} break-words whitespace-pre-wrap`}>
+                {question.question}
+              </p>
+            </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-auto">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={onClose}
-                className={`px-[40px] py-[12px] rounded-[12px] font-[600] text-[14px] uppercase tracking-[1px] cursor-pointer border-none transition-opacity ${theme.button} hover:opacity-90`}
+                className={`w-[60px] h-[60px] rounded-full flex items-center justify-center cursor-pointer border-none transition-all duration-200 ${theme.button} hover:opacity-90 active:!bg-red-500 active:!text-white shadow-lg`}
               >
-                ĐÓNG
+                <X size={32} strokeWidth={2.5} />
               </motion.button>
             </div>
           </motion.div>

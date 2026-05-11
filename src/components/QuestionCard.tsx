@@ -13,14 +13,11 @@ interface QuestionCardProps {
 }
 
 export const QuestionCard = ({ question, isOpened, onClick, theme, isEditMode }: QuestionCardProps) => {
-  const isClickable = !isOpened || isEditMode;
-
   return (
     <motion.button
-      whileHover={isClickable ? { scale: 1.05 } : {}}
-      whileTap={isClickable ? { scale: 0.95 } : {}}
-      onClick={() => isClickable && onClick(question)}
-      disabled={!isClickable}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => onClick(question)}
       className={`
         w-full h-full min-h-[100px] md:min-h-[120px] rounded-[24px] border-[2px] flex flex-col items-center justify-center relative transition-all duration-300 outline-none
         ${isOpened && !isEditMode
