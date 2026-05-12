@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Question } from '../data/questions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeDef } from '../data/themes';
-import { X } from 'lucide-react';
+import { X, Play } from 'lucide-react';
 
 interface QuestionModalProps {
   question: Question | null;
@@ -11,15 +11,31 @@ interface QuestionModalProps {
 }
 
 export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) => {
-  // Ngăn cuộn trang web khi popup đang mở
+  const [isStarted, setIsStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(5);
+
+  // Ngăn cuộn trang web khi popup đang mở và reset trạng thái bắt đầu
   useEffect(() => {
     if (question) {
       document.body.style.overflow = 'hidden';
+      setIsStarted(false);
+      setTimeLeft(5);
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [question]);
+
+  // Logic đếm ngược thời gian
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isStarted && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [isStarted, timeLeft]);
 
   return (
     <AnimatePresence>
@@ -54,7 +70,25 @@ export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) 
               </p>
             </div>
 
-            <div className="flex justify-end mt-auto">
+            <div className="flex justify-between items-center mt-auto">
+              <div className="flex items-center gap-4 md:gap-6">
+                {!isStarted && timeLeft === 5 ? (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsStarted(true)}
+                    className={`px-[30px] md:px-[40px] py-[12px] md:py-[16px] rounded-[16px] font-[700] text-[16px] md:text-[20px] uppercase tracking-[2px] cursor-pointer border-none transition-all duration-200 bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700 shadow-lg flex items-center gap-2`}
+                  >
+                    <Play size={24} fill="currentColor" />
+                    BẮT ĐẦU
+                  </motion.button>
+                ) : (
+                  <div className={`text-[40px] md:text-[60px] font-bold tracking-widest ${timeLeft === 0 ? 'text-red-500' : theme.modalText}`}>
+                    00:0{timeLeft}
+                  </div>
+                )}
+              </div>
+
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
