@@ -26,11 +26,37 @@ export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) 
     return () => { document.body.style.overflow = 'unset'; };
   }, [question]);
 
+  const playTickSound = () => {
+    try {
+      const AudioContextDef = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextDef) return;
+      const audioCtx = new AudioContextDef();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.1);
+    } catch (e) {
+      // Ignore audio error
+    }
+  };
+
   // Logic đếm ngược thời gian
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isStarted && timeLeft > 0) {
       timer = setInterval(() => {
+        playTickSound();
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     }
@@ -76,7 +102,10 @@ export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) 
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsStarted(true)}
+                    onClick={() => {
+                      playTickSound();
+                      setIsStarted(true);
+                    }}
                     className={`px-[30px] md:px-[40px] py-[12px] md:py-[16px] rounded-[16px] font-[700] text-[16px] md:text-[20px] uppercase tracking-[2px] cursor-pointer border-none transition-all duration-200 bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700 shadow-lg flex items-center gap-2`}
                   >
                     <Play size={24} fill="currentColor" />
