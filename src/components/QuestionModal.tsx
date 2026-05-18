@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { Question } from '../data/questions';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ThemeDef } from '../data/themes';
-import { X, Play } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface QuestionModalProps {
   question: Question | null;
@@ -11,62 +11,20 @@ interface QuestionModalProps {
 }
 
 export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) => {
-  const [isStarted, setIsStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(5);
-
   // Ngăn cuộn trang web khi popup đang mở và reset trạng thái bắt đầu
   useEffect(() => {
     if (question) {
       document.body.style.overflow = 'hidden';
-      setIsStarted(false);
-      setTimeLeft(5);
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [question]);
 
-  const playTickSound = () => {
-    try {
-      const AudioContextDef = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContextDef) return;
-      const audioCtx = new AudioContextDef();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-
-      oscillator.type = 'triangle';
-      oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
-
-      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.1);
-    } catch (e) {
-      // Ignore audio error
-    }
-  };
-
-  // Logic đếm ngược thời gian
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isStarted && timeLeft > 0) {
-      timer = setInterval(() => {
-        playTickSound();
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [isStarted, timeLeft]);
-
   return (
     <AnimatePresence>
       {question && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 md:p-6">
           {/* Lớp nền làm mờ */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -82,42 +40,48 @@ export const QuestionModal = ({ question, onClose, theme }: QuestionModalProps) 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-[95vw] md:w-[90vw] max-w-[1200px] min-h-[60vh] md:min-h-[70vh] border-[2px] rounded-[32px] p-[30px] md:p-[60px] flex flex-col ${theme.modalBg} transition-colors duration-500`}
+            className={`relative w-full h-full max-w-[1800px] border-[2px] rounded-[32px] p-[30px] md:p-[60px] flex flex-col ${theme.modalBg} transition-colors duration-500 overflow-hidden shadow-2xl`}
           >
-            <div className="flex justify-between items-center mb-[32px] border-b border-white/10 pb-[24px]">
-              <span className={`font-bold text-[18px] md:text-[24px] uppercase tracking-[2px] ${theme.modalTitle}`}>
+            <div className="flex justify-between items-center mb-[32px] border-b border-black/10 pb-[24px]">
+              <span className={`font-bold text-[18px] md:text-[28px] uppercase tracking-[2px] ${theme.modalTitle}`}>
                 CÂU HỎI SỐ {String(question.id).padStart(2, '0')}
               </span>
             </div>
 
-            <div className="flex-1 flex flex-col justify-center">
-              <p className={`text-[28px] md:text-[48px] leading-[1.4] text-center mb-[40px] ${theme.modalText} break-words whitespace-pre-wrap`}>
+            <div className="flex-1 flex flex-col justify-center gap-8 overflow-y-auto pr-4">
+              <p className={`text-[28px] md:text-[45px] font-medium leading-[1.5] text-center ${theme.text} break-words whitespace-pre-wrap mb-8`}>
                 {question.question}
               </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 max-w-6xl mx-auto w-full mt-4">
+                {['A', 'B', 'C', 'D'].map((opt) => {
+                  const optionText = 
+                    opt === 'A' ? question.optionA : 
+                    opt === 'B' ? question.optionB : 
+                    opt === 'C' ? question.optionC : 
+                    question.optionD;
+                  
+                  if (!optionText) return null;
+
+                  return (
+                    <motion.div
+                      key={opt}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + (opt.charCodeAt(0) - 65) * 0.1 }}
+                      className={`flex items-center gap-6 p-6 md:p-8 rounded-3xl border-2 border-black/5 ${theme.optionBg} cursor-pointer hover:scale-[1.02] transition-transform shadow-sm`}
+                    >
+                      <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 flex items-center justify-center rounded-full font-bold text-xl md:text-2xl ${theme.button}`}>
+                        {opt}
+                      </div>
+                      <span className={`text-[20px] md:text-[24px] leading-snug font-medium ${theme.text}`}>{optionText}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="flex justify-between items-center mt-auto">
-              <div className="flex items-center gap-4 md:gap-6">
-                {!isStarted && timeLeft === 5 ? (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      playTickSound();
-                      setIsStarted(true);
-                    }}
-                    className={`px-[30px] md:px-[40px] py-[12px] md:py-[16px] rounded-[16px] font-[700] text-[16px] md:text-[20px] uppercase tracking-[2px] cursor-pointer border-none transition-all duration-200 bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700 shadow-lg flex items-center gap-2`}
-                  >
-                    <Play size={24} fill="currentColor" />
-                    BẮT ĐẦU
-                  </motion.button>
-                ) : (
-                  <div className={`text-[40px] md:text-[60px] font-bold tracking-widest ${timeLeft === 0 ? 'text-red-500' : theme.modalText}`}>
-                    00:0{timeLeft}
-                  </div>
-                )}
-              </div>
-
+            <div className="flex justify-end items-center mt-auto">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}

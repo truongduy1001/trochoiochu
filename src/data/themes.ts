@@ -19,6 +19,7 @@ export interface ThemeDef {
   button: string;
   footer: string;
   footerBtn: string;
+  optionBg: string;
 }
 
 export const themes: Record<ThemeKey, ThemeDef> = {
@@ -41,6 +42,7 @@ export const themes: Record<ThemeKey, ThemeDef> = {
     button: 'bg-[linear-gradient(135deg,#0ea5e9_0%,#0284c7_100%)] text-white shadow-[0_4px_14px_0_rgba(14,165,233,0.39)]',
     footer: 'bg-white/80 border-sky-200 text-slate-600',
     footerBtn: 'bg-sky-200 text-sky-900 hover:bg-sky-300',
+    optionBg: 'bg-sky-100/80',
   },
   sunny: {
     bg: 'bg-[radial-gradient(circle_at_center,_#fef3c7_0%,_#fcd34d_100%)] bg-amber-100',
@@ -61,6 +63,7 @@ export const themes: Record<ThemeKey, ThemeDef> = {
     button: 'bg-[linear-gradient(135deg,#f59e0b_0%,#d97706_100%)] text-white shadow-[0_4px_14px_0_rgba(245,158,11,0.39)]',
     footer: 'bg-white/80 border-amber-200 text-slate-600',
     footerBtn: 'bg-amber-200 text-amber-900 hover:bg-amber-300',
+    optionBg: 'bg-amber-100/80',
   },
   berry: {
     bg: 'bg-[radial-gradient(circle_at_center,_#fce7f3_0%,_#fbcfe8_100%)] bg-pink-100',
@@ -81,6 +84,7 @@ export const themes: Record<ThemeKey, ThemeDef> = {
     button: 'bg-[linear-gradient(135deg,#ec4899_0%,#db2777_100%)] text-white shadow-[0_4px_14px_0_rgba(236,72,153,0.39)]',
     footer: 'bg-white/80 border-pink-200 text-slate-600',
     footerBtn: 'bg-pink-200 text-pink-900 hover:bg-pink-300',
+    optionBg: 'bg-pink-100/80',
   },
   forest: {
     bg: 'bg-[radial-gradient(circle_at_center,_#dcfce7_0%,_#bbf7d0_100%)] bg-green-100',
@@ -101,5 +105,6 @@ export const themes: Record<ThemeKey, ThemeDef> = {
     button: 'bg-[linear-gradient(135deg,#22c55e_0%,#16a34a_100%)] text-white shadow-[0_4px_14px_0_rgba(34,197,94,0.39)]',
     footer: 'bg-white/80 border-green-200 text-slate-600',
     footerBtn: 'bg-green-200 text-green-900 hover:bg-green-300',
+    optionBg: 'bg-green-100/80',
   }
 };
